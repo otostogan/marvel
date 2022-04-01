@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import MarvelService from '../../services/MarverlServices';
+import useMarvelService from '../../services/MarverlServices';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMesage';
 
@@ -26,11 +26,9 @@ const transformDescr = (desc) => {
 }
 const RandomChar = () => {
 
-    const marvelService = new MarvelService();
+    const {error, loading, getCharacter, clearError} = useMarvelService();
 
     const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, seterror] = useState(false);
 
     useEffect(()=>{
         updateChar();
@@ -39,22 +37,15 @@ const RandomChar = () => {
    
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    }
-    const onError = () => {
-        seterror(true);
-        setLoading(false);
     }
     const onCharUpdate = () => {
-        setLoading(true);
         updateChar();
     }
     const updateChar = () => {
+        clearError();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        marvelService
-            .getCharacter(id)
+        getCharacter(id)
             .then(onCharLoaded)
-            .catch(onError);
     }
     
 
@@ -90,12 +81,12 @@ const View = ({char}) => {
 
     const {name, description, thumbnail, homepage, wiki} = char;
 
-    const thumbnailStyle = thumbnail.includes('image_not_available.jpg') ? {objectFit: 'contain'} : null;
+    // const thumbnailStyle = thumbnail.includes('image_not_available.jpg') ? {objectFit: 'contain'} : null;
     
 
     return (
         <div className="randomchar__block">
-            <img style={thumbnailStyle} src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img  src={thumbnail} alt="Random character" className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
